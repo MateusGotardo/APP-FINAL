@@ -1,4 +1,3 @@
-
 import csv
 import os
 from PyQt5.QtWidgets import QInputDialog, QMessageBox, QDialog, QVBoxLayout, QLabel, QPushButton
@@ -17,6 +16,7 @@ class CadastroHelper:
             if tipo and tipo not in tipos:
                 tipos.append(tipo)
                 tipo_combo.addItem(tipo)
+                tipo_combo.setCurrentText("")  # limpa texto atual
                 with open(TIPOS_CSV, 'a', encoding='utf-8', newline='') as f:
                     csv.writer(f).writerow([tipo])
                 QMessageBox.information(parent, "Cadastro", f"Tipo '{tipo}' cadastrado.")
@@ -33,6 +33,7 @@ class CadastroHelper:
             if fornecedor and fornecedor not in fornecedores:
                 fornecedores.append(fornecedor)
                 forn_combo.addItem(fornecedor)
+                forn_combo.setCurrentText("")  # limpa texto atual
                 with open(FORNECEDORES_CSV, 'a', encoding='utf-8', newline='') as f:
                     csv.writer(f).writerow([fornecedor])
                 QMessageBox.information(parent, "Cadastro", f"Fornecedor '{fornecedor}' cadastrado.")
