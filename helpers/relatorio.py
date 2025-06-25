@@ -19,6 +19,11 @@ LOGO_PATH = os.path.join('recursos', 'logo galeria.png')
 class RelatorioHelper:
     @staticmethod
     def gerar_com_filtros(parent, tabela, tipos, fornecedores):
+        # Se uma tabela já for passada diretamente, gere PDF com ela
+        if tabela and len(tabela) > 1:
+            RelatorioHelper.gerar_pdf(tabela, parent)
+            return
+
         dialog = QDialog(parent)
         dialog.setWindowTitle("Filtros do Relatório")
         layout = QVBoxLayout(dialog)
@@ -167,8 +172,12 @@ class RelatorioHelper:
             QMessageBox.warning(parent, "Sem dados", "Nenhum registro encontrado com os filtros informados.")
             return
 
+        RelatorioHelper.gerar_pdf(dados_filtrados, parent)
+
+    @staticmethod
+    def gerar_pdf(dados, parent):
         nome, _ = QFileDialog.getSaveFileName(
-            parent, "Salvar Relatório", "relatorio_galeria_compras.pdf", "PDF Files (*.pdf)")
+            parent, "Salvar Relatório", "relatorio_base_calculo.pdf", "PDF Files (*.pdf)")
         if not nome:
             return
 
@@ -180,7 +189,7 @@ class RelatorioHelper:
             story.append(Image(LOGO_PATH, width=140, height=90))
 
         story.append(Spacer(1, 10))
-        story.append(Paragraph("<b>RELATÓRIO - CONTROLE DE COMPRAS</b>", styles['Title']))
+        story.append(Paragraph("<b>RELATÓRIO - BASE DE CÁLCULO</b>", styles['Title']))
         story.append(Spacer(1, 12))
         story.append(Paragraph("Nome da Empresa: <b>Galeria dos Esportes</b>", styles['Normal']))
         story.append(Paragraph("CNPJ: <b>02.966.083/0001-01</b>", styles['Normal']))
@@ -188,14 +197,13 @@ class RelatorioHelper:
         story.append(Paragraph("Contato: <b>67 3384-2210</b>", styles['Normal']))
         story.append(Spacer(1, 20))
 
-        t = Table(dados_filtrados, repeatRows=1, colWidths=[60, 110, 140, 80, 110])  # Valor aumentado de 60 para 80
+        t = Table(dados, repeatRows=1, colWidths='*')
         t.setStyle(TableStyle([
             ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#ff6600')),
             ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
             ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
             ('FONTSIZE', (0, 0), (-1, 0), 11),
             ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
-            ('ALIGN', (3, 1), (3, -1), 'RIGHT'),
             ('GRID', (0, 0), (-1, -1), 0.5, colors.gray),
             ('VALIGN', (0, 0), (-1, -1), 'TOP'),
         ]))

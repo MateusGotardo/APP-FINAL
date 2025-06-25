@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtCore import Qt
 from core.cadastrar_dialog import CadastrarDialog
 from core.cadastrar_helper import CadastroHelper
+from helpers.relatorio import RelatorioHelper
 
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
@@ -17,6 +18,21 @@ DADOS_DIR = 'dados'
 COMPRAS_CSV = os.path.join(DADOS_DIR, 'compras.csv')
 TIPOS_CSV = os.path.join(DADOS_DIR, 'tipos.csv')
 FORNECEDORES_CSV = os.path.join(DADOS_DIR, 'fornecedores.csv')
+
+class CurrencyItem(QTableWidgetItem):
+    def __init__(self, text):
+        super().__init__(text)
+        try:
+            cleaned = text.replace("R$", "").replace(".", "").replace(",", ".")
+            self.valor_float = float(cleaned)
+        except ValueError:
+            self.valor_float = 0.0
+
+    def __lt__(self, other):
+        if isinstance(other, CurrencyItem):
+            return self.valor_float < other.valor_float
+        return super().__lt__(other)
+
 
 class ComprasWidget(QWidget):
     def __init__(self):
@@ -231,7 +247,11 @@ class ComprasWidget(QWidget):
                 pos = self.tabela.rowCount()
                 self.tabela.insertRow(pos)
                 for i, val in enumerate(row):
-                    self.tabela.setItem(pos, i, QTableWidgetItem(val))
+                    if i == 3:  # Coluna "Valor"
+                        self.tabela.setItem(pos, i, CurrencyItem(val))
+                    else:
+                        self.tabela.setItem(pos, i, QTableWidgetItem(val))
+
 
     def excluir_compra(self):
         linha = self.tabela.currentRow()
@@ -287,5 +307,8 @@ class ComprasWidget(QWidget):
             QMessageBox.information(self, "Backup", f"Backup salvo em: {nome}")
 
     def gerar_relatorio_placeholder(self):
-        QMessageBox.information(self, "Relatório", "Função gerar relatório ainda a ser implementada.")
+        try:
+            RelatorioHelper.gerar_com_filtros(self, self.tabela, self.tipos, self.fornecedores)
+        except Exception as e:
+            QMessageBox.critical(self, "Erro", f"Erro ao gerar relatório:\n{str(e)}")
 

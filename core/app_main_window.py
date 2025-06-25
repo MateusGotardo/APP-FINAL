@@ -5,7 +5,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
 
-from core.compras_widget import ComprasWidget  # Importa seu módulo de compras
+from core.compras_widget import ComprasWidget  
 from core.base_calculo_widget import BaseCalculoWidget
 
 DADOS_DIR = 'dados'
@@ -16,7 +16,9 @@ class AppMainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("Galeria dos Esportes - Sistema Principal")
-        # self.setGeometry(100, 100, 1200, 700)  # Comentado para fullscreen
+        self.setGeometry(100, 100, 1600, 900)
+        self.showMaximized()
+
         self.setStyleSheet("""
             QWidget {
                 background-color: #2b2b2b;
@@ -30,17 +32,6 @@ class AppMainWindow(QMainWindow):
                 border: 1px solid #555555;
                 padding: 5px;
                 border-radius: 4px;
-            }
-            QPushButton {
-                background-color: #ff6600;
-                color: white;
-                border: none;
-                padding: 8px 15px;
-                border-radius: 5px;
-                font-weight: bold;
-            }
-            QPushButton:hover {
-                background-color: #e65c00;
             }
             QCheckBox {
                 spacing: 5px;
@@ -83,9 +74,6 @@ class AppMainWindow(QMainWindow):
         # Carrega módulo Compras automaticamente ao iniciar
         self.abrir_compras()
 
-        # Abre a janela maximizada (tela cheia)
-        # self.showMaximized()
-
     def _build_menu_lateral(self):
         layout = QVBoxLayout()
         layout.setAlignment(Qt.AlignTop)
@@ -120,28 +108,49 @@ class AppMainWindow(QMainWindow):
         linha.setStyleSheet("color: #444444;")
         layout.addWidget(linha)
 
-        # Botões do menu
+        # Botões do menu com estilo laranja
         btn_compras = QPushButton("Compras")
+        self.estilo_botao_laranja(btn_compras)
         btn_compras.clicked.connect(self.abrir_compras)
         layout.addWidget(btn_compras)
 
         btn_base_calc = QPushButton("Base de cálculo 120%")
+        self.estilo_botao_laranja(btn_base_calc)
         btn_base_calc.clicked.connect(self.abrir_base_calculo)
         layout.addWidget(btn_base_calc)
 
         btn_vazio1 = QPushButton("Vazio")
-        btn_vazio1.setDisabled(True)  # Sem função por enquanto
+        self.estilo_botao_laranja(btn_vazio1)
+        btn_vazio1.setDisabled(True)
         layout.addWidget(btn_vazio1)
 
         btn_vazio2 = QPushButton("Vazio")
-        btn_vazio2.setDisabled(True)  # Sem função por enquanto
+        self.estilo_botao_laranja(btn_vazio2)
+        btn_vazio2.setDisabled(True)
         layout.addWidget(btn_vazio2)
 
         layout.addStretch()
 
         btn_sair = QPushButton("Sair")
+        self.estilo_botao_laranja(btn_sair)
         btn_sair.clicked.connect(self.close)
         layout.addWidget(btn_sair)
+
+    def estilo_botao_laranja(self, botao):
+        botao.setStyleSheet("""
+            QPushButton {
+                background-color: #ff6600;
+                color: white;
+                border: none;
+                padding: 8px 15px;
+                border-radius: 5px;
+                font-weight: bold;
+            }
+            QPushButton:hover {
+                background-color: #e65c00;
+            }
+        """)
+        botao.setCursor(Qt.PointingHandCursor)
 
     def abrir_compras(self):
         self._limpar_area_modulo()
